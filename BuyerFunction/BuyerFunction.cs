@@ -11,7 +11,7 @@ namespace BuyerFunction
     public class BuyerFunction
     {
         [FunctionName("BuyerFunction")]
-        public void Run([TimerTrigger("0 */5 * * * *")]TimerInfo myTimer, ILogger log)
+        public void Run([TimerTrigger("0 */15 * * * *")]TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
