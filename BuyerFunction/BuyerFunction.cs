@@ -11,15 +11,15 @@ namespace BuyerFunction
     public class BuyerFunction
     {
         [FunctionName("BuyerFunction")]
-        public void Run([TimerTrigger("0 */1 * * * *")]TimerInfo myTimer, ILogger log)
+        public void Run([TimerTrigger("0 */5 * * * *")]TimerInfo myTimer, ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
-            string accountEndPoint = "https://purchase-statistic-app.documents.azure.com:443/";
-            string dbName = "statistic-db";
-            string containerName = "vendingPurchases";
+            string connectionString = Environment.GetEnvironmentVariable("COSMOS_DB_CONNECTION_STRING");
+            string dbName = Environment.GetEnvironmentVariable("COSMOS_DB_NAME");
+            string containerName = Environment.GetEnvironmentVariable("COSMOS_DB_CONTAINER_NAME");
 
-            CosmosClient client = new(accountEndPoint, new DefaultAzureCredential());
+            CosmosClient client = new(connectionString);
             Container container = client.GetContainer(dbName, containerName);
             CosmosDbRepository repository = new(container);
 
