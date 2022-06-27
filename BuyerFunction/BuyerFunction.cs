@@ -19,7 +19,7 @@ namespace BuyerFunction
             string dbName = "statistic-db";
             string containerName = "vendingPurchases";
 
-            CosmosClient client = new(accountEndPoint, new AzureCliCredential());
+            CosmosClient client = new(accountEndPoint, new DefaultAzureCredential());
             Container container = client.GetContainer(dbName, containerName);
             CosmosDbRepository repository = new(container);
 
