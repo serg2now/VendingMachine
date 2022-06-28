@@ -17,7 +17,7 @@ namespace BuyerFunction
         [FunctionName("BuyerFunction")]
         public static async Task Run(
             [TimerTrigger("0 */5 * * * *")]TimerInfo myTimer,
-            [WebPubSub(Hub = "notification")] IAsyncCollector<WebPubSubAction> actions,
+            [WebPubSub(Hub = "vendingNotifications")] IAsyncCollector<WebPubSubAction> actions,
             ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
