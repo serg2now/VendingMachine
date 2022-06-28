@@ -1,9 +1,13 @@
 using System;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Azure.Identity;
 using BuyerFunction.DAL;
 using BuyerFunction.Services;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.WebPubSub;
+using Microsoft.Azure.WebPubSub.Common;
 using Microsoft.Extensions.Logging;
 
 namespace BuyerFunction
@@ -11,7 +15,10 @@ namespace BuyerFunction
     public class BuyerFunction
     {
         [FunctionName("BuyerFunction")]
-        public void Run([TimerTrigger("0 */15 * * * *")]TimerInfo myTimer, ILogger log)
+        public static async Task Run(
+            [TimerTrigger("0 */5 * * * *")]TimerInfo myTimer,
+            [WebPubSub(Hub = "notification")] IAsyncCollector<WebPubSubAction> actions,
+            ILogger log)
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
 
@@ -25,7 +32,15 @@ namespace BuyerFunction
 
             PurchaseService service = new(repository, log);
 
-            service.BuyProduct();
+            PurchaseDao purchase = service.BuyProduct();
+
+            string purchaseJson = JsonSerializer.Serialize(purchase);
+            SendToAllAction action = new()
+            { 
+                Data = BinaryData.FromString(purchaseJson),
+                DataType = WebPubSubDataType.Text
+            };
+            await actions.AddAsync(action);
         }
     }
 }

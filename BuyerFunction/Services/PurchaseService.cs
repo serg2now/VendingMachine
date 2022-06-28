@@ -21,13 +21,15 @@ namespace BuyerFunction.Services
             InitCompanies();
         }
 
-        public void BuyProduct()
+        public PurchaseDao BuyProduct()
         {
             PurchaseDao purchase = BuildPurchase();
 
             _repository.WriteItemAsync(purchase).Wait();
 
             _logger.LogInformation($"New purchase '{ purchase.ProductName }' was made, on { purchase.Date }");
+
+            return purchase;
         }
 
         private void InitCompanies()
@@ -128,12 +130,12 @@ namespace BuyerFunction.Services
 
         private PurchaseDao BuildPurchase()
         {
-            Random random = new Random();
+            Random random = new();
 
-            int companyId = random.Next(1, _companies.Count);
+            int companyId = random.Next(1, _companies.Count + 1);
             Company company = _companies[companyId];
 
-            int productId = random.Next(2, company.Products.Count);
+            int productId = random.Next(2, company.Products.Count + 1);
             Product product = company.Products[productId];
 
             string date = $"{DateTime.UtcNow:dd-MMM-yyyy}";
