@@ -1,5 +1,4 @@
 using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Azure.Identity;
 using BuyerFunction.DAL;
@@ -9,6 +8,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.WebPubSub;
 using Microsoft.Azure.WebPubSub.Common;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace BuyerFunction
 {
@@ -16,7 +16,7 @@ namespace BuyerFunction
     {
         [FunctionName("BuyerFunction")]
         public static async Task Run(
-            [TimerTrigger("0 */5 * * * *")]TimerInfo myTimer,
+            [TimerTrigger("0 */15 * * * *")]TimerInfo myTimer,
             [WebPubSub(Hub = "vendingNotifications")] IAsyncCollector<WebPubSubAction> actions,
             ILogger log)
         {
@@ -34,7 +34,7 @@ namespace BuyerFunction
 
             PurchaseDao purchase = service.BuyProduct();
 
-            string purchaseJson = JsonSerializer.Serialize(purchase);
+            string purchaseJson = JsonConvert.SerializeObject(purchase);
             SendToAllAction action = new()
             { 
                 Data = BinaryData.FromString(purchaseJson),
